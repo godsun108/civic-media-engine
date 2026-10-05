@@ -1,0 +1,27 @@
+name: Ballot Atlas checks
+on:
+  push:
+    paths:
+      - 'ballot_atlas/**'
+      - '.github/workflows/ballot-atlas.yml'
+  pull_request:
+    paths:
+      - 'ballot_atlas/**'
+      - '.github/workflows/ballot-atlas.yml'
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Registry tests
+        run: python -m unittest discover -s ballot_atlas -p 'test_*.py' -v
+      - name: FEC adapter tests
+        run: python -m unittest discover -s ballot_atlas/adapters -p 'test_*.py' -v
+      - name: Compile source
+        run: python -m compileall -q ballot_atlas
